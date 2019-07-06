@@ -182,6 +182,8 @@
               created_at: new Date()
             }
           )
+          this.wish = ''
+          this.name = ''
         }
         if (this.images.length > 0) {
           reader.readAsDataURL(this.images[0])
@@ -196,6 +198,8 @@
               created_at: new Date()
             }
           )
+          this.wish = ''
+          this.name = ''
         }
         const formData = new FormData()
         formData.append('id', id)
@@ -208,12 +212,11 @@
           formData.append('background[]', image)
         }
 
-        this.wish = ''
-        this.name = ''
         this.images = []
         // まさかのDOM操作
         const obj = document.getElementById('f1')
         obj.value = ''
+
         await this.$axios.$post('/api/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
