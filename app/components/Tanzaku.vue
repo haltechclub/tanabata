@@ -38,7 +38,8 @@
       return {
         day: moment(this.wish.created_at),
         backColor: {
-          'background': this.wish.color
+          'background-color': this.wish.color,
+          'background-image': 'url("' + this.wish.background + '")'
         }
       }
     },
@@ -66,6 +67,7 @@
     height: 512px;
     margin: 16px;
     border: white 3px solid;
+    background-size: cover;
     position: relative;
     color: #444;
     font-weight: bolder;

@@ -2,23 +2,24 @@
   <v-layout column justify-center align-center wrap>
     <v-flex xs12 sm8 md6>
       <div class="text-xs-center">
-        <logo/>
+        <logo />
       </div>
       <v-layout wrap justify-space-around>
         <div v-for="item in items" :key="item.id">
-          <Tanzaku :wish="item"></Tanzaku>
+          <Tanzaku :wish="item" />
         </div>
       </v-layout>
     </v-flex>
 
     <v-fab-transition>
       <v-btn
-        @click="dialog = true"
         color="green"
         fixed
         bottom
         right
-        fab>
+        fab
+        @click="dialog = true"
+      >
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -28,15 +29,15 @@
           <h2>願い事</h2>
           <form>
             <div>
-              <textarea v-model.trim="wish" class="inputForm tArea"></textarea>
+              <textarea v-model.trim="wish" class="inputForm tArea" />
             </div>
             <div class="name">
               <label>お名前</label>
-              <input v-model.trim="name" type="text" class="inputForm tName"/>
+              <input v-model.trim="name" type="text" class="inputForm tName">
             </div>
             <div class="img">
               <label>背景</label>
-              <input @change="onUpload()" type="file" class="inputForm iImg">
+              <input id="f1" type="file" class="inputForm iImg" @change="onUpload()">
             </div>
           </form>
         </div>
@@ -140,46 +141,6 @@
       Logo,
       Tanzaku
     },
-    methods: {
-      onUpload: function () {
-        this.images = event.target.files
-      },
-      write: function (event) {
-        this.dialog = false
-        if (this.userId === '') {
-          this.userId = 'usr-' + uuidv4()
-        }
-        const id = 'pst-' + uuidv4()
-        const back = colors[Math.floor(Math.random() * colors.length)]
-        this.items.unshift({
-          id: id,
-          body: this.wish,
-          name: this.name,
-          color: back,
-          user_id: this.userId,
-          background: '',
-          created_at: new Date()
-        })
-
-        const formData = new FormData()
-        formData.append('id', id)
-        formData.append('body', this.wish)
-        formData.append('name', this.name)
-        formData.append('color', back)
-        formData.append('user_id', this.userId)
-        for (let i = 0; i < this.images.length; i++) {
-          const image = this.images[i]
-          formData.append('background[]', image)
-        }
-        this.$axios.$post('/api/', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-
-        this.wish = ''
-        this.name = ''
-        this.images = []
-      }
-    },
     data() {
       return {
         dialog: false,
@@ -194,6 +155,68 @@
       const response = await app.$axios.$get('/api/')
       return {
         items: response
+      }
+    },
+    methods: {
+      onUpload: function () {
+        this.images = event.target.files
+      },
+      write: async function (event) {
+        this.dialog = false
+        if (this.userId === '') {
+          this.userId = 'usr-' + uuidv4()
+        }
+        const id = 'pst-' + uuidv4()
+        const back = colors[Math.floor(Math.random() * colors.length)]
+
+        const reader = new FileReader()
+        reader.onload = () => {
+          this.items.unshift(
+            {
+              id: id,
+              body: this.wish,
+              name: this.name,
+              color: back,
+              user_id: this.userId,
+              background: reader.result,
+              created_at: new Date()
+            }
+          )
+        }
+        if (this.images.length > 0) {
+          reader.readAsDataURL(this.images[0])
+        } else {
+          this.items.unshift(
+            {
+              id: id,
+              body: this.wish,
+              name: this.name,
+              color: back,
+              user_id: this.userId,
+              created_at: new Date()
+            }
+          )
+        }
+        const formData = new FormData()
+        formData.append('id', id)
+        formData.append('body', this.wish)
+        formData.append('name', this.name)
+        formData.append('color', back)
+        formData.append('user_id', this.userId)
+        for (let i = 0; i < this.images.length; i++) {
+          const image = this.images[i]
+          formData.append('background[]', image)
+        }
+
+        this.wish = ''
+        this.name = ''
+        this.images = []
+        // まさかのDOM操作
+        const obj = document.getElementById('f1')
+        obj.value = ''
+        await this.$axios.$post('/api/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       }
     }
   }
