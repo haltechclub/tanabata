@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
             // ローカル保存
             if (S3_BUCKET_NAME == '') {
                 move_uploaded_file($tmp_name, "data/$imgName." . $ext);
-                $background = "http://localhost/api/data/$imgName." . $ext;
+                $background = "http://". $_SERVER["HTTP_HOST"]. "/api/data/$imgName." . $ext;
             } else {
                 // S3保存
                 putenv("AWS_ACCESS_KEY_ID=".AWS_ACCESS_KEY_ID);
