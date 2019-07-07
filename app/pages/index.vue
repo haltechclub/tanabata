@@ -169,6 +169,13 @@
         const id = 'pst-' + uuidv4()
         const back = colors[Math.floor(Math.random() * colors.length)]
 
+
+        const formData = new FormData()
+        formData.append('id', id)
+        formData.append('body', this.wish)
+        formData.append('name', this.name)
+        formData.append('color', back)
+        formData.append('user_id', this.userId)
         const reader = new FileReader()
         reader.onload = () => {
           this.items.unshift(
@@ -201,12 +208,6 @@
           this.wish = ''
           this.name = ''
         }
-        const formData = new FormData()
-        formData.append('id', id)
-        formData.append('body', this.wish)
-        formData.append('name', this.name)
-        formData.append('color', back)
-        formData.append('user_id', this.userId)
         for (let i = 0; i < this.images.length; i++) {
           const image = this.images[i]
           formData.append('background[]', image)
